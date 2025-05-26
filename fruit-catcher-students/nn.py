@@ -12,8 +12,21 @@ class NeuralNetwork:
         self.output_activation = output_activation
 
     def compute_num_weights(self):
-        # Implement this. Remember to account for the biases.
-        pass
+        total = 0
+        input_size = self.input_size
+
+        for n in self.hidden_architecture:
+            total += n  # biases
+            total += input_size * n  # pesos
+            input_size = n  # atualiza para a próxima camada
+
+        # camada de saída
+        total += 1  # bias da saída
+        total += input_size  # pesos da saída
+
+        return total
+
+        
 
     def load_weights(self, weights):
         w = np.array(weights)
@@ -35,8 +48,16 @@ class NeuralNetwork:
 
 
     def forward(self, x):
-        # Implement this
-        pass
+        output = x
+
+        # Passa pelas camadas escondidas
+        for weights, biases in zip(self.hidden_weights, self.hidden_biases):
+            output = np.dot(output, weights) + biases
+            output = self.hidden_activation(output)
+
+        # Camada de saída
+        output = np.dot(output, self.output_weights) + self.output_bias
+        return self.output_activation(output)
         
 
 def create_network_architecture(input_size):
@@ -45,4 +66,4 @@ def create_network_architecture(input_size):
 
     hidden_fn = lambda x: 1 / (1 + np.exp(-x))
     output_fn = lambda x: 1 if x > 0 else -1
-    return NeuralNetwork(input_size, (), hidden_fn, output_fn)
+    return NeuralNetwork(input_size, (12,), hidden_fn, output_fn)
