@@ -66,4 +66,4 @@ def create_network_architecture(input_size):
 
     hidden_fn = lambda x: 1 / (1 + np.exp(-x))
     output_fn = lambda x: 1 if x > 0 else -1
-    return NeuralNetwork(input_size, (12,), hidden_fn, output_fn)
+    return NeuralNetwork(input_size, (10,), hidden_fn, output_fn)

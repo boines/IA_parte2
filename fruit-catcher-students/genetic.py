@@ -1,3 +1,11 @@
+
+def load_best_individual_from_file(filename):
+    try:
+        with open(filename, 'r') as f:
+            return list(map(float, f.read().strip().split(',')))
+    except FileNotFoundError:
+        return None
+
 import random
 
 # cria um indivíduo com valores de pesos entre -1 e 1
@@ -10,8 +18,17 @@ def generate_population(individual_size, population_size):
     return [create_individual(individual_size) for _ in range(population_size)]
 
 
-def genetic_algorithm(individual_size, population_size, fitness_function, target_fitness, generations, elite_rate=0.05, mutation_rate=0.1):
-    population = generate_population(individual_size, population_size)
+def genetic_algorithm(individual_size, population_size, fitness_function, target_fitness, generations, elite_rate=0.1, mutation_rate=0.2):
+    copies = max(1, int(0.05 * population_size))
+    population = generate_population(individual_size, population_size - copies)
+    best_from_file = load_best_individual_from_file("best_individual.txt")
+    
+    if best_from_file:
+        for _ in range(copies):
+            population.append(best_from_file)
+    else:
+        for _ in range(copies):
+            population.append(create_individual(individual_size))
     best_individual = None
     parent = None
     no_improvement = 0  # contador para estagnação
@@ -47,7 +64,7 @@ def genetic_algorithm(individual_size, population_size, fitness_function, target
         # se não houve melhoria, incrementa o contador de estagnação
         if no_improvement >= 5:
             print("Injecting diversity...")
-            for _ in range(int(0.1 * population_size)):
+            for _ in range(int(0.2 * population_size)):
                 parent = random.choice(elites)
                 mutated = mutate(parent, mutation_rate * 2)  # mutação mais forte
                 new_population.append(mutated)
