@@ -8,6 +8,7 @@ class DecisionTree:
         self.label = None
         self.attribute = None
         self.children = {}
+        self.majority_label = max(set(y), key=y.count) # para ver se há mais bombas ou frutas até agora
 
         # ver se X ou y estão vazios, assumimos q é fruta
         # mais assumir fruta q bomba porque senão podemos estar a negar frutas - já não
@@ -80,7 +81,8 @@ class DecisionTree:
             x_reduced = x[:self.attribute] + x[self.attribute+1:]
             return self.children[v].predict(x_reduced)
         else:
-            return -1 # se não houver filho para o valor do atributo, retorna -1 (não é fruta)
+            return self.majority_label  # fallback mais flexível
+            #return -1 # se não houver filho para o valor do atributo, retorna -1 (não é fruta)
             #return self.label
 
     # só para testar
